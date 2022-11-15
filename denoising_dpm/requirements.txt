@@ -1,0 +1,7 @@
+pytorch
+matplotlib==3.6.2
+imageio==2.22.4
+tqdm==4.64.1
+datasets==2.6.1
+rich==12.6.0
+labml_nn==0.4.16
