@@ -1,19 +1,26 @@
-import matplotlib.pyplot as plt
 import imageio
+import matplotlib.pyplot as plt
 import numpy as np
-from torchvision.transforms.functional import to_pil_image, resize
-from torchvision.transforms import Compose, ToTensor, Lambda, ToPILImage, CenterCrop, Resize
 from datasets import load_dataset
-
+from torchvision.transforms import (
+    CenterCrop,
+    Compose,
+    Lambda,
+    Resize,
+    ToTensor,
+)
+from torchvision.transforms.functional import resize, to_pil_image
 
 # ============ Image Utilities =============
 
-def show_image(self, img, title=""):
+
+def show_image(img, title=""):
     img = img.clip(0, 1)
     img = img.cpu().numpy()
     plt.imshow(img.transpose(1, 2, 0))
     plt.title(title)
     plt.show()
+
 
 def make_video(path, frames):
     writer = imageio.get_writer(path, len(frames) // 20)
@@ -22,43 +29,47 @@ def make_video(path, frames):
         f = f.clip(0, 1)
         f = to_pil_image(resize(f, [368, 368]))
         writer.append_data(np.array(f))
-    
+
     writer.close()
 
 
 # ==========================================
 
 # ============ Data Utilities ==============
-class DataLoader:
+class ImageLoader:
     def __init__(self, dataset_name="huggan/CelebA-faces", split="train", transforms=True):
         self.dataset_name = dataset_name
         self.image_size = 32
         self.split = split
         self.image_size = 32
-    
-        self.transform = Compose([
-            Resize(self.image_size),
-            CenterCrop(self.image_size),
-            ToTensor(),
-            Lambda(lambda t: (t * 2) -1),
-        ])
 
-        def transforms(self, examples):
-            examples['image'] = [self.transform(image) for image in examples['image']]
-            return examples
-        
-        def stage_data(self):
-            dataset = load_dataset(self.dataset_name, split=self.split)
-            transformed_dataset = dataset.with_transform(self.transforms)
-            return transformed_dataset
+        self.transform = Compose(
+            [
+                Resize(self.image_size),
+                CenterCrop(self.image_size),
+                ToTensor(),
+                Lambda(lambda t: (t * 2) - 1),
+            ]
+        )
+
+    def transforms(self, examples):
+        examples["image"] = [self.transform(image) for image in examples["image"]]
+        return examples
+
+    def stage_data(self):
+        dataset = load_dataset(self.dataset_name, split=self.split)
+        transformed_dataset = dataset.with_transform(self.transforms)
+        return transformed_dataset
 
 
+# ==========================================
 
 
 # ========= Configuration Utilities ========
 
+
 class CfgNode:
-    """ a lightweight configuration class inspired by yacs """
+    """a lightweight configuration class inspired by yacs"""
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
@@ -67,7 +78,7 @@ class CfgNode:
         return self._str_helper(0)
 
     def _str_helper(self, indent):
-        """ need to have a helper to support nested indentation for pretty printing """
+        """need to have a helper to support nested indentation for pretty printing"""
         parts = []
         for k, v in self.__dict__.items():
             if isinstance(v, CfgNode):
@@ -75,12 +86,12 @@ class CfgNode:
                 parts.append(v._str_helper(indent + 1))
             else:
                 parts.append("%s: %s\n" % (k, v))
-        parts = [' ' * (indent * 4) + p for p in parts]
+        parts = [" " * (indent * 4) + p for p in parts]
         return "".join(parts)
 
     def to_dict(self):
-        """ return a dict representation of the config """
-        return { k: v.to_dict() if isinstance(v, CfgNode) else v for k, v in self.__dict__.items() }
+        """return a dict representation of the config"""
+        return {k: v.to_dict() if isinstance(v, CfgNode) else v for k, v in self.__dict__.items()}
 
     def merge_from_dict(self, d):
         self.__dict__.update(d)
@@ -95,9 +106,11 @@ class CfgNode:
         """
         for arg in args:
 
-            keyval = arg.split('=')
-            assert len(keyval) == 2, "expecting each override arg to be of form --arg=value, got %s" % arg
-            key, val = keyval # unpack
+            keyval = arg.split("=")
+            assert len(keyval) == 2, (
+                "expecting each override arg to be of form --arg=value, got %s" % arg
+            )
+            key, val = keyval  # unpack
 
             # first translate val into a python object
             try:
@@ -111,9 +124,9 @@ class CfgNode:
                 pass
 
             # find the appropriate object to insert the attribute into
-            assert key[:2] == '--'
-            key = key[2:] # strip the '--'
-            keys = key.split('.')
+            assert key[:2] == "--"
+            key = key[2:]  # strip the '--'
+            keys = key.split(".")
             obj = self
             for k in keys[:-1]:
                 obj = getattr(obj, k)
@@ -125,5 +138,6 @@ class CfgNode:
             # overwrite the attribute
             print("command line overwriting config attribute %s with %s" % (key, val))
             setattr(obj, leaf_key, val)
+
 
 # ==========================================
