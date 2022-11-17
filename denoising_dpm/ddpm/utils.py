@@ -11,8 +11,6 @@ from torchvision.transforms import (
 )
 from torchvision.transforms.functional import resize, to_pil_image
 
-# ============ Image Utilities =============
-
 
 def show_image(img, title=""):
     img = img.clip(0, 1)
@@ -33,9 +31,6 @@ def make_video(path, frames):
     writer.close()
 
 
-# ==========================================
-
-# ============ Data Utilities ==============
 class ImageLoader:
     def __init__(self, dataset_name="huggan/CelebA-faces", split="train", transforms=True):
         self.dataset_name = dataset_name
@@ -60,12 +55,6 @@ class ImageLoader:
         dataset = load_dataset(self.dataset_name, split=self.split)
         transformed_dataset = dataset.with_transform(self.transforms)
         return transformed_dataset
-
-
-# ==========================================
-
-
-# ========= Configuration Utilities ========
 
 
 class CfgNode:
