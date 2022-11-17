@@ -1,9 +1,10 @@
-from torchvision.utils import save_image
-from ddpm.denoising import DenoiseDiffusion
 import torch
-from ddpm.utils import ImageLoader
+from torchvision.utils import save_image
 from tqdm import tqdm
+
 from config.config import logger
+from ddpm.denoising import DenoiseDiffusion
+from ddpm.utils import ImageLoader
 
 # check if cuda is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

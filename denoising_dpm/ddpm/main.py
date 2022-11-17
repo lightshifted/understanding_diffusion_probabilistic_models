@@ -1,7 +1,7 @@
-from ddpm.denoising import DenoiseDiffusion
+import torch
 from tqdm import tqdm
 
-import torch
+from ddpm.denoising import DenoiseDiffusion
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
