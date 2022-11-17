@@ -1,17 +1,17 @@
 import torch
 from tqdm import tqdm
+from denoising import DenoiseDiffusion
+import typer
 
-from ddpm.denoising import DenoiseDiffusion
+# for CLI
+app = typer.Typer()
 
+# check if cuda is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 def extract(consts, t):
     c = consts.gather(-1, t)
     return c.reshape(-1, 1, 1, 1)
-
-
-g = torch.Generator(device=device).manual_seed(31415)  # for reproducibility
 
 n_steps = 1000  # T
 
@@ -36,11 +36,22 @@ sigma2 = diffusion.beta
 alpha = alpha.to(device)
 sigma2 = sigma2.to(device)
 
+@app.command()
+def generate_sample(n_samples: int = 1, n_steps: int = 999, image_channels: int=3, image_size: int=32):
+    """Langevin sampling from the diffusion model.
 
-def generate_sample(n_samples: int = 1, n_steps: int = 999):
+    Args:
+        n_samples (int, optional): _description_. Defaults to 1.
+        n_steps (int, optional): _description_. Defaults to 999.
+        image_channels (int, optional): _description_. Defaults to 3.
+        image_size (int, optional): _description_. Defaults to 32.
+
+    Returns:
+        torch.Tensor: generated image
+    """
     n_samples = n_samples
-    image_channels = 3
-    image_size = 32
+    image_channels = image_channels
+    image_size = image_size
     n_steps = n_steps
 
     xt = torch.randn([n_samples, image_channels, image_size, image_size], device=device)
@@ -59,4 +70,7 @@ def generate_sample(n_samples: int = 1, n_steps: int = 999):
     alpha_bar = extract(alpha_bar, t)
     x0 = (xt - (1 - alpha_bar) ** 0.5 * eps_theta) / (alpha_bar**0.5)
 
-    return x0
+    return {x0}
+
+if __name__ == "__main__":
+    app()
