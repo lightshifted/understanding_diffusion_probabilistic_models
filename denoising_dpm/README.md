@@ -14,7 +14,7 @@ Diffusion Probabilistic Models (DPMs) are a type of probabilistic graphical mode
 ```bash
 python3 -m pip install -e . # installs required packages only
 ```
-PyTorch $\geq$ 1.13.0 and Python $\geq$ 3.8.5
+PyTorch $\geq$ 1.13.0 and Python $\geq$ 3.8.5 are required.
 
 ## 3. Getting Started
 Check the `ddpm_example` notebook for an example use of the codebase.
