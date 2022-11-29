@@ -9,10 +9,16 @@ Diffusion Probabilistic Models (DPMs) are a type of probabilistic graphical mode
 
 **tl;dr**: Train a denoising model conditioned on the amount of noise present in the image, and generate samples by iteratively denoising from pure noise to a final sample.
 
-## 2. Installation
+## 2. Installation & Requirements
 **With `pip`**
 ```bash
 python3 -m pip install -e . # installs required packages only
 ```
+PyTorch $\greq$ 1.13.0 and Python $\greq$ 3.8.5
+
 ## 3. Getting Started
 Check the `ddpm_example` notebook for an example use of the codebase.
+
+## 4. Resources
+1. Denoising [Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239) paper by Yang Song and team.
+2. The excellent blog post [Generative Modeling by Estimating Gradients of the Data Distribution](https://yang-song.net/blog/2021/score/) by Yang Song.
